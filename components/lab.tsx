@@ -158,13 +158,13 @@ export function Lab({
             Use in your tests <ArrowUpRight size={17} />
           </Link>
         </div>
-        <noscript>
+        {!hydrated && (
           <p className="noscript-notice">
             JavaScript is required to run and inspect comparisons. The recorded
             example below remains readable.{' '}
             <Link href="/docs">Run the Python example locally.</Link>
           </p>
-        </noscript>
+        )}
         <section className="workspace" aria-label="Interactive failure lab">
           <aside className="scenario-panel">
             <h2>Failure scenario</h2>

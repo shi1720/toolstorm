@@ -6,7 +6,7 @@ async function initialize() {
   const py = await loadPyodide({
     indexURL: new URL('/runtime/', self.location.href).href,
   });
-  const response = await fetch('/engine.bundle.json');
+  const response = await fetch('/engine.bundle.json' + self.location.search);
   if (!response.ok) throw new Error('Could not load ToolStorm package');
   const files = await response.json();
   py.FS.mkdirTree('/home/pyodide/toolstorm');

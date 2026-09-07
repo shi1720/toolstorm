@@ -8,7 +8,7 @@ ToolStorm's purpose is to turn a specific failure hypothesis into a small execut
 
 ## A 30-second pitch
 
-> ToolStorm is a zero-dependency Python library for testing agents on their bad days. It can drop a tool's acknowledgement after the action actually succeeds, reveal duplicate side effects from naïve retries, and prove that an idempotent recovery fixes the problem. The same engine powers a browser lab, pytest contracts, and portable replay fixtures. It focuses on explicit, reproducible evidence instead of a single opaque resilience score.
+> ToolStorm is a Python library for testing recovery from tool failures, with no runtime dependencies. It can drop a tool's acknowledgement after the action actually succeeds, reveal duplicate side effects from naïve retries, and check that an idempotent recovery avoids the duplicate in the fixture. The same engine powers a browser lab, pytest contracts, and portable replay fixtures. It focuses on explicit, reproducible evidence instead of a single opaque resilience score.
 
 ## Existing work
 

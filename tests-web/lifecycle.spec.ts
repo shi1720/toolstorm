@@ -170,11 +170,10 @@ test('without JavaScript the example remains readable and unavailable controls e
     ).toBeVisible();
     await expect(start(page)).toBeDisabled();
     // Prefer a visible noscript explanation with a link to CLI instructions.
-    await expect(page.locator('noscript')).toContainText(/JavaScript/i);
-    await expect(page.locator('noscript').getByRole('link')).toHaveAttribute(
-      'href',
-      /docs/,
-    );
+    await expect(page.locator('.noscript-notice')).toContainText(/JavaScript/i);
+    await expect(
+      page.locator('.noscript-notice').getByRole('link'),
+    ).toHaveAttribute('href', /docs/);
     for (const name of ['Copy settings link', 'Export selected result']) {
       const control = page.getByRole('button', { name, exact: true });
       // Hiding unavailable actions is acceptable too.
@@ -290,4 +289,54 @@ test('invalid number drafts do not execute and shared links describe the display
     .getByRole('button', { name: 'Copy settings link', exact: true })
     .click();
   await expect(page).toHaveURL(/seed=42&p=1&budget=8/);
+});
+
+test('clipboard completion cannot replace a later documentation route', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: () =>
+          new Promise<void>((resolve) => setTimeout(resolve, 5000)),
+      },
+    }),
+  );
+  await page.goto('/');
+  await page
+    .getByRole('button', { name: 'Copy settings link', exact: true })
+    .click();
+  await page.getByRole('link', { name: 'Documentation', exact: true }).click();
+  await expect(page).toHaveURL(/\/docs$/);
+  await page.clock.runFor(5001);
+  await expect(page).toHaveURL(/\/docs$/);
+  await expect(
+    page.getByRole('heading', { name: 'Test a real recovery path.' }),
+  ).toBeVisible();
+});
+
+test('Home resets settings after editing, executing and sharing a run', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByLabel('Random seed', { exact: true }).fill('1729');
+  await page
+    .getByRole('radio', { name: 'Sustained outage', exact: true })
+    .check();
+  await start(page).click();
+  await expect(executed(page)).toBeVisible({ timeout: 90000 });
+  await page
+    .getByRole('button', { name: 'Copy settings link', exact: true })
+    .click();
+  await expect(page).toHaveURL(/scenario=blackout&seed=1729/);
+  await page.getByRole('link', { name: 'ToolStorm home', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByLabel('Random seed', { exact: true })).toHaveValue(
+    '42',
+  );
+  await expect(
+    page.getByRole('radio', { name: 'Lost acknowledgement', exact: true }),
+  ).toBeChecked();
 });

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'ToolStorm — Test recovery from tool failures',
   description:
-    'A zero-dependency Python library for deterministic tool failures, strict offline replay, and side-effect contracts. Explore the interactive agent resilience lab.',
+    'A Python library with no runtime dependencies for deterministic tool failures, strict offline replay, and side-effect contracts. Explore the interactive agent resilience lab.',
   icons: { icon: '/favicon.svg' },
   metadataBase: new URL('https://toolstorm-shi1720.sg127977958.chatgpt.site'),
   openGraph: {

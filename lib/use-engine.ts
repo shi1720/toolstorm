@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Comparison, Config } from './types';
+import { version } from './product';
 
 type Request = {
   resolve: (value: Comparison) => void;
@@ -42,7 +43,7 @@ export function useEngine() {
         try {
           if (!worker.current) {
             setStatus('loading');
-            const instance = new Worker('/python-worker.js', {
+            const instance = new Worker(`/python-worker.js?v=${version}`, {
               type: 'module',
             });
             worker.current = instance;

@@ -1,4 +1,4 @@
-name: Propose a failure recipe
+name: Failure scenario
 description: A real failure mode with a broken and corrected control.
 labels: [enhancement]
 body:

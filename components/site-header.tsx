@@ -1,6 +1,22 @@
+'use client';
+import type { MouseEvent } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { version, repository } from '@/lib/product';
+// Home starts a fresh experiment, including drafts that never changed route props.
+function resetHome(event: MouseEvent<HTMLAnchorElement>) {
+  if (
+    window.location.pathname === '/' &&
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  ) {
+    event.preventDefault();
+    window.location.assign('/');
+  }
+}
 export function SiteHeader({
   active = 'lab',
 }: {
@@ -12,7 +28,12 @@ export function SiteHeader({
         Skip to content
       </a>
       <div className="header-inner">
-        <Link href="/" className="brand" aria-label="ToolStorm home">
+        <Link
+          href="/"
+          className="brand"
+          onClick={resetHome}
+          aria-label="ToolStorm home"
+        >
           <span className="brand-mark" aria-hidden="true">
             <i />
             <i />
@@ -31,6 +52,7 @@ export function SiteHeader({
             <Link
               key={id}
               href={href}
+              onClick={id === 'lab' ? resetHome : undefined}
               aria-current={active === id ? 'page' : undefined}
             >
               {label}
