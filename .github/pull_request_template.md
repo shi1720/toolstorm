@@ -1,7 +1,5 @@
-## Problem and resulting behavior
+Describe the concrete failure or missing behavior and what changes for the caller.
 
-Explain the failure being fixed or the concrete new behavior.
+**Validation:** include the command(s) run and the negative control that demonstrates the defect.
 
-## Validation
-
-Include the regression or control which proves the change. Note any limits.
+**Compatibility:** note any public API, cassette schema, or documented guarantee changes.

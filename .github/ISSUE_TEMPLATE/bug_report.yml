@@ -1,0 +1,25 @@
+name: Bug report
+description: A reproducible fault, contract, replay, or lab defect.
+labels: [bug]
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include a small test or the lab configuration. Use synthetic data; remove credentials and private payloads.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and observed behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: ToolStorm version, Python version, OS; browser if relevant.
+    validations:
+      required: true

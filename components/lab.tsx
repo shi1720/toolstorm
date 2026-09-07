@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -72,6 +72,10 @@ function download(value: unknown, name: string) {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
+const subscribeHydration = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
+
 const pretty = (value: unknown) => JSON.stringify(value, null, 2) ?? 'null';
 const ms = (n: number) => `${Math.round(n * 1000)} ms`;
 
@@ -93,6 +97,13 @@ export function Lab({
     [filter, setFilter] = useState<string | null>(null),
     [tab, setTab] = useState('trace');
   const engine = useEngine();
+  // SSR controls stay disabled until React has attached their event handlers.
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    clientReady,
+    serverReady,
+  );
+  const controlsDisabled = running || !hydrated;
   const run = comparison.runs.find((r) => r.policy === policy)!;
   const scenario = catalog.scenarios[config.scenario],
     snapshot = catalog.scenarios[comparison.scenario];
@@ -185,7 +196,7 @@ export function Lab({
               aria-label="Failure scenario"
               value={config.scenario}
               onValueChange={(v) => changed({ scenario: v as Scenario })}
-              disabled={running}
+              disabled={controlsDisabled}
               className="scenario-list"
             >
               {scenarioNames.map((id) => {
@@ -230,7 +241,7 @@ export function Lab({
                 max={100}
                 step={5}
                 value={[Math.round(config.probability * 100)]}
-                disabled={running}
+                disabled={controlsDisabled}
                 onValueChange={(v) =>
                   changed({ probability: (Array.isArray(v) ? v[0] : v) / 100 })
                 }
@@ -251,7 +262,7 @@ export function Lab({
                       min={0}
                       max={999999}
                       value={config.seed}
-                      disabled={running}
+                      disabled={controlsDisabled}
                       onChange={(e) => {
                         const value = Number(e.target.value);
                         if (
@@ -274,7 +285,7 @@ export function Lab({
                       min={1}
                       max={20}
                       value={config.max_calls}
-                      disabled={running}
+                      disabled={controlsDisabled}
                       onChange={(e) => {
                         const value = Number(e.target.value);
                         if (
@@ -292,7 +303,7 @@ export function Lab({
             <button
               className="run-button"
               onClick={runStorm}
-              disabled={running}
+              disabled={controlsDisabled}
             >
               {running ? (
                 <Loader2 className="spin" size={19} />

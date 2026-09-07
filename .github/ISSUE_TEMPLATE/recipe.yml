@@ -1,0 +1,18 @@
+name: Propose a failure recipe
+description: A real failure mode with a broken and corrected control.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What can go wrong?
+      description: Describe the tool boundary, execution phase, and observable consequence.
+    validations:
+      required: true
+  - type: textarea
+    id: controls
+    attributes:
+      label: Broken control, corrected control, and behavioral contract
+      description: What evidence should distinguish them? Why would a response-only assertion miss it?
+    validations:
+      required: true

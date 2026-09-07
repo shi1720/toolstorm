@@ -127,6 +127,7 @@ test('mobile is usable without page overflow', async ({ page }) => {
 test('main pages have no serious or critical accessibility violations', async ({
   page,
 }) => {
+  const findings: unknown[] = [];
   for (const path of ['/', '/docs', '/recipes']) {
     await page.goto(path);
     const scan = await new AxeBuilder({ page })
@@ -135,12 +136,16 @@ test('main pages have no serious or critical accessibility violations', async ({
     const serious = scan.violations.filter(
       (v) => v.impact === 'serious' || v.impact === 'critical',
     );
-    expect(
-      serious.map((v) => ({
+    findings.push(
+      ...serious.map((v) => ({
+        path,
         id: v.id,
-        description: v.description,
-        nodes: v.nodes.map((n) => n.target),
+        nodes: v.nodes.map((n) => ({
+          target: n.target,
+          summary: n.failureSummary,
+        })),
       })),
-    ).toEqual([]);
+    );
   }
+  expect(findings).toEqual([]);
 });

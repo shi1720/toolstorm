@@ -2941,3 +2941,12 @@ a:focus-visible {
 .range-hints {
   color: #647668;
 }
+
+/* Minimum AA text contrast on the two tinted evidence surfaces. */
+.fault-label {
+  color: #e4b69c;
+}
+.takeaway p:last-child,
+.takeaway > a {
+  color: #506145;
+}
