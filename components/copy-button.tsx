@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Check, Copy } from 'lucide-react';
 export function CopyButton({
   text,
@@ -8,6 +8,11 @@ export function CopyButton({
   text: string;
   label?: string;
 }) {
+  const ready = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const [message, setMessage] = useState('');
   async function copy() {
     try {
@@ -22,6 +27,7 @@ export function CopyButton({
     <button
       className="copy-button"
       onClick={copy}
+      disabled={!ready}
       aria-label={message || label}
     >
       {message === 'Copied' ? <Check size={16} /> : <Copy size={16} />}

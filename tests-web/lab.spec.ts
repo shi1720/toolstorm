@@ -8,34 +8,36 @@ test('real Python run exposes duplicate writes and the corrected policy', async 
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(
-    page.getByRole('heading', { name: 'Give your agent a bad day.' }),
+    page.getByRole('heading', { name: 'Test recovery from tool failures.' }),
   ).toBeVisible();
   await expect(page.getByText('Recorded Python example')).toBeVisible();
   await page
-    .getByRole('button', { name: 'Run the storm', exact: true })
+    .getByRole('button', { name: 'Run comparison', exact: true })
     .click();
-  await expect(page.getByText('Executed in browser')).toBeVisible({
+  await expect(page.getByText('Executed in your browser')).toBeVisible({
     timeout: 90000,
   });
-  await page.getByRole('tab', { name: 'Contracts', exact: true }).click();
+  await page.getByRole('tab', { name: /^Checks/ }).click();
   await expect(
     page.getByText('1 duplicate effect(s) across 2 commits'),
   ).toBeVisible();
-  await page.getByRole('button', { name: /03 PASS The realist/ }).click();
+  await page.getByRole('button', { name: /Validated retries/ }).click();
   await expect(
     page.getByText('0 duplicate effect(s) across 1 commits'),
   ).toBeVisible();
-  await page.getByRole('tab', { name: /Execution trace/ }).click();
-  await page.getByRole('button', { name: /create_shipment attempt 1/ }).click();
+  await page.getByRole('tab', { name: /Call trace/ }).click();
+  await page.getByRole('button', { name: /create_shipment Attempt 1/ }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(
     page.getByText('Committed side effects', { exact: true }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).click();
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Export run' }).click();
+  await page.getByRole('button', { name: 'Export selected result' }).click();
   const file = await downloadPromise;
-  expect(file.suggestedFilename()).toBe('toolstorm-lost_ack-resilient.json');
+  expect(file.suggestedFilename()).toBe(
+    'toolstorm-lost_ack-resilient-seed42.json',
+  );
   const stream = await file.createReadStream();
   expect(stream).not.toBeNull();
   const chunks: Buffer[] = [];
@@ -46,6 +48,9 @@ test('real Python run exposes duplicate writes and the corrected policy', async 
   expect(exported.report.calls).toHaveLength(3);
   expect(errors).toEqual([]);
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
+  await page
+    .getByRole('button', { name: 'Unchecked retries', exact: true })
+    .click();
   await page
     .locator('.workspace')
     .screenshot({ path: 'test-results/toolstorm-lab.png' });
@@ -60,48 +65,52 @@ test('scenario links, changed configuration and actual fault coverage', async ({
 }) => {
   await page.goto('/?scenario=blackout&seed=1729&policy=resilient');
   await expect(
-    page.getByRole('heading', { name: 'The service has left the chat' }),
+    page.getByRole('heading', { name: 'Sustained inventory outage' }),
   ).toBeVisible();
   await expect(page.getByLabel('Random seed', { exact: true })).toHaveValue(
     '1729',
   );
-  await expect(page.getByText(/Configuration changed/)).toBeVisible();
+  await expect(page.getByText(/Settings changed/)).toBeVisible();
   await page
-    .getByRole('button', { name: 'Run the storm', exact: true })
+    .getByRole('button', { name: 'Run comparison', exact: true })
     .click();
-  await expect(page.getByText('Executed in browser')).toBeVisible({
+  await expect(page.getByText('Executed in your browser')).toBeVisible({
     timeout: 90000,
   });
-  await page.getByRole('tab', { name: 'Contracts', exact: true }).click();
+  await page.getByRole('tab', { name: /^Checks/ }).click();
   await expect(page.getByText('Honest outcome', { exact: true })).toBeVisible();
   await page.getByRole('radio', { name: 'Rate limit', exact: true }).check();
   await expect(
-    page.getByRole('heading', { name: 'Everybody wants it now' }),
+    page.getByRole('heading', { name: 'Rate-limited inventory reads' }),
   ).toBeVisible();
-  await expect(page.getByText(/Configuration changed/)).toBeVisible();
+  await expect(page.getByText(/Settings changed/)).toBeVisible();
   await page.getByRole('slider', { name: 'Fault probability' }).focus();
   await page.keyboard.press('Home');
   await page
-    .getByRole('button', { name: 'Run the storm', exact: true })
+    .getByRole('button', { name: 'Run comparison', exact: true })
     .click();
+  await expect(
+    page.getByRole('heading', { name: 'No failure was injected' }),
+  ).toBeVisible();
+  await page.getByRole('tab', { name: /^Checks/ }).click();
   await expect(page.getByText('Triggered 0 time(s)')).toBeVisible();
 });
 
 test('docs and recipes navigation work', async ({ page }) => {
   await page.goto('/docs');
   await expect(
-    page.getByRole('heading', { name: 'Make failure part of the test.' }),
+    page.getByRole('heading', { name: 'Test a real recovery path.' }),
   ).toBeVisible();
-  await page.getByRole('link', { name: 'Recipes', exact: true }).click();
+  await page.getByRole('link', { name: 'Scenarios', exact: true }).click();
   await expect(
-    page.getByRole('heading', { name: 'Pick your failure mode.' }),
+    page.getByRole('heading', { name: 'Six failures worth testing.' }),
   ).toBeVisible();
   await page
     .getByRole('link')
-    .filter({ hasText: 'The lost acknowledgement' })
+    .filter({ hasText: 'Lost acknowledgement' })
     .click();
   await expect(
-    page.getByRole('heading', { name: 'The lost acknowledgement' }),
+    page.getByRole('heading', { name: 'Lost acknowledgement' }),
   ).toBeVisible();
 });
 
@@ -109,7 +118,7 @@ test('mobile is usable without page overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(
-    page.getByRole('button', { name: 'Run the storm', exact: true }),
+    page.getByRole('button', { name: 'Run comparison', exact: true }),
   ).toBeVisible();
   expect(
     await page.evaluate(
@@ -120,7 +129,7 @@ test('mobile is usable without page overflow', async ({ page }) => {
     .getByRole('radio', { name: 'Malformed response', exact: true })
     .check();
   await expect(
-    page.getByRole('heading', { name: "Looks like JSON. Isn't a contract." }),
+    page.getByRole('heading', { name: 'Invalid inventory response' }),
   ).toBeVisible();
   await page.screenshot({
     path: 'test-results/toolstorm-mobile.png',
@@ -165,15 +174,15 @@ test('initial HTML keeps readable typography before JavaScript attaches', async 
       process.env.TOOLSTORM_BASE_URL || 'http://localhost:3000',
     );
     await expect(
-      initial.getByRole('button', { name: 'Run the storm', exact: true }),
+      initial.getByRole('button', { name: 'Run comparison', exact: true }),
     ).toBeDisabled();
     await page.goto('/');
     await expect(
-      page.getByRole('button', { name: 'Run the storm', exact: true }),
+      page.getByRole('button', { name: 'Run comparison', exact: true }),
     ).toBeEnabled();
     for (const selector of [
-      '.section-label',
-      '.eyebrow',
+      '.page-kicker',
+      '.incident-id',
       '.scenario-option small',
     ]) {
       const initialSizes = await initial

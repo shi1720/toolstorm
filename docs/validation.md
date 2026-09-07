@@ -4,7 +4,7 @@ The release is checked at three layers: library behavior, identical engine execu
 
 ## Python tests
 
-The release suite contains **256 passing tests** with **93% statement coverage**. The pytest suite includes independent adversarial reproductions and property-based tests. It covers:
+The release suite contains **268 passing tests** with **93% statement coverage**. The pytest suite includes independent adversarial reproductions and property-based tests. It covers:
 
 - pre-call faults with zero live executions;
 - post-success acknowledgement loss with an actual committed effect;
@@ -43,6 +43,12 @@ The Playwright suite exercises real Python initialization, negative and correcte
 
 Browser tests run in GitHub Actions; manual desktop and mobile checks use the same visible browser app. A clean browser test does not prove accessibility for every assistive technology or prove every browser/runtime combination.
 
+## 0.2.0 review and release checks
+
+The redesign adds browser regressions for a failed runtime download followed by retry, startup cancellation, a 90-second timeout, same-route navigation and browser history, mobile error visibility, no-JavaScript guidance, invalid number drafts, and clipboard denial. These run against the built website, with the real Python worker. CI also fresh-installs the wheel and source distribution outside the checkout, checks metadata and the pytest entry point, and runs the packaged CLI and reference policy without runtime dependencies.
+
+The new Python regressions cover unreportable replacement configuration, payload depth at the report boundary, probability-zero fault evidence, mismatched replacement results, and successful calls marked unexecuted.
+
 ## Independent review changes
 
 Reviewers found and reproduced defects before release. Fixes are retained as regression tests, including:
@@ -71,4 +77,4 @@ These are concrete defects addressed during development, not independent certifi
 - Vinext is a beta framework. The Python package is independent of the website stack.
 - Test dependencies are version-ranged; the website uses a committed lockfile. CI runs on hosted images whose underlying system packages may evolve.
 
-The [pre-release acceptance run](https://github.com/shi1720/toolstorm/actions/runs/34126404377) passed all five Python versions and all five browser tests, including the three-page accessibility scan. It also reported zero npm audit findings. The [workflow history](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml) records checks for subsequent documentation and release commits. A successful build or coverage threshold alone should never be described as proof of production maturity.
+The original 0.1.0 [pre-release acceptance run](https://github.com/shi1720/toolstorm/actions/runs/34126404377) passed all five Python versions and all five browser tests, including the three-page accessibility scan. It also reported zero npm audit findings. The [workflow history](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml) records checks for subsequent documentation and release commits. A successful build or coverage threshold alone should never be described as proof of production maturity.

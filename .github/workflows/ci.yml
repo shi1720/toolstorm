@@ -27,6 +27,7 @@ jobs:
       - run: ruff check src tests examples
       - run: mypy src/toolstorm
       - run: python -m build --outdir artifacts/python
+      - run: python scripts/smoke_distribution.py artifacts/python
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: matrix.python == '3.12'
         with:

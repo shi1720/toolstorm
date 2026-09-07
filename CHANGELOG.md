@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — 2026-09-07
+
+- Rebuild the browser lab around observed outcomes, policy comparison, and committed-effect evidence. Replace policy nicknames with behavioral descriptions; make timing, provenance, and changed settings explicit.
+- Add runnable local commands for the displayed result, readable mobile layouts, no-JavaScript guidance, and refreshed documentation.
+- Recreate failed Python workers so transient runtime-download errors can recover. Make cancellation neutral, bound startup to 90 seconds, and reconcile configuration on same-route navigation.
+- Reject unreportable replacement configuration before execution. Reserve report-envelope depth when capturing payloads so successful outputs cannot make a report unexportable.
+- Reject impossible imported evidence: probability-zero selected faults, replacement payload mismatches, and successful ordinary calls without execution.
+- Add regression tests for capture/import boundaries and browser lifecycle failures. Fresh-install both built distributions in CI.
+
+
 ## 0.1.0 — 2026-09-07
 
 Initial beta release.

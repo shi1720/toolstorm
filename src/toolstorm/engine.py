@@ -117,6 +117,10 @@ class Storm:
         self.max_calls = max_calls
         self.capture = capture
         self.redactor = redactor or Redactor()
+        # Rules must remain reportable even when unused or capture is disabled.
+        # Reject unreportable fixture configuration before any tool can execute.
+        for rule in self.rules:
+            self._capture_payload(rule.replacement)
         self._start = self.clock.now()
         self._calls: list[Call] = []
         self._effects: list[Effect] = []
@@ -171,6 +175,11 @@ class Storm:
                 )
             )
 
+    def _capture_payload(self, value: Any) -> Any:
+        # Payloads live three levels below the serialized report root.
+        # Reserve that envelope depth so accepted capture remains exportable.
+        return json_value(self.redactor.scrub(value), depth=3)
+
     def _begin(self, name: str, arguments: Any) -> tuple[Call, Rule | None]:
         with self._lock:
             if len(self._calls) >= self.max_calls:
@@ -180,7 +189,7 @@ class Storm:
             key = self._key.get() or f"#{ordinal}"
             if (name, key) in self._keys:
                 raise ConfigurationError("Duplicate invocation key for this tool")
-            captured = self.redactor.scrub(arguments) if self.capture else None
+            captured = self._capture_payload(arguments) if self.capture else None
             self._keys.add((name, key))
             self._ordinals[name] = ordinal
             selected = None
@@ -234,7 +243,7 @@ class Storm:
             raise ResponseLost("Tool completed; acknowledgement was lost")
         if self.capture:
             try:
-                call.output = self.redactor.scrub(result)
+                call.output = self._capture_payload(result)
             except ConfigurationError:
                 call.capture_error = True
                 # Observability must not turn a successful write into a failed call.
@@ -328,7 +337,7 @@ class Storm:
             for rule in self.rules:
                 data = rule.to_dict()
                 # Replacement payloads can contain sensitive fixture data too.
-                data["replacement"] = self.redactor.scrub(data["replacement"])
+                data["replacement"] = self._capture_payload(data["replacement"])
                 rules.append(data)
             return Report(
                 seed=self.seed,

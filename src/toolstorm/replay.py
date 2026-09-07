@@ -125,6 +125,8 @@ def validate_report(data: Any) -> dict[str, Any]:
             raise ConfigurationError("Invalid recorded fault kind")
         if call["status"] == "ok" and call["error"] is not None:
             raise ConfigurationError("Successful call cannot contain an error")
+        if call["status"] == "ok" and call["kind"] != "replace" and not call["executed"]:
+            raise ConfigurationError("Successful non-replacement call requires execution")
         if call["status"] in ("error", "cancelled"):
             require_keys(call["error"], {"type", "known"}, {"retry_after"})
             if (
@@ -217,6 +219,8 @@ def validate_report(data: Any) -> dict[str, Any]:
         if call["fault"] not in indexed_rules:
             raise ConfigurationError("Call references an unknown fault rule")
         rule = indexed_rules[call["fault"]]
+        if rule.probability == 0:
+            raise ConfigurationError("A probability-zero rule cannot be selected")
         if call["kind"] != rule.kind or not rule.eligible(call["tool"], call["ordinal"]):
             raise ConfigurationError("Call fault does not match its rule")
         expected_coverage[rule.name]["selected"] += 1
@@ -238,6 +242,14 @@ def validate_report(data: Any) -> dict[str, Any]:
                 raise ConfigurationError("Pre-call failure must carry its declared error")
         if rule.kind == "replace" and call["status"] not in ("running", "ok"):
             raise ConfigurationError("Replacement must return its payload successfully")
+        if (
+            rule.kind == "replace"
+            and call["status"] == "ok"
+            and data["capture"]
+            and not call["capture_error"]
+            and canonical(call["output"]) != canonical(rule.replacement)
+        ):
+            raise ConfigurationError("Captured replacement disagrees with its rule payload")
         if rule.kind == "response_lost":
             if not call["executed"]:
                 raise ConfigurationError("A lost acknowledgement requires execution")

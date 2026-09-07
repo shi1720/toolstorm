@@ -13,18 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ToolStorm — Break your tools. Trust your recovery.',
+  title: 'ToolStorm — Test recovery from tool failures',
   description:
     'A zero-dependency Python library for deterministic tool failures, strict offline replay, and side-effect contracts. Explore the interactive agent resilience lab.',
   icons: { icon: '/favicon.svg' },
   metadataBase: new URL('https://toolstorm-shi1720.sg127977958.chatgpt.site'),
   openGraph: {
-    title: 'ToolStorm — Give your agent a bad day.',
+    title: 'ToolStorm — Test recovery from tool failures',
     description:
-      'Inject the failure. Inspect the recovery. Keep the regression.',
+      'Inject failures into Python tools, check committed effects, and replay recorded calls offline.',
     type: 'website',
   },
-  twitter: { card: 'summary', title: 'ToolStorm — Agent Resilience Lab' },
+  twitter: { card: 'summary', title: 'ToolStorm — Python tool testing' },
 };
 
 export default function RootLayout({

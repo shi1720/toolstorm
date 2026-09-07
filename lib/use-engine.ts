@@ -2,91 +2,88 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Comparison, Config } from './types';
 
-type Pending = {
+type Request = {
   resolve: (value: Comparison) => void;
   reject: (reason: Error) => void;
   timer: ReturnType<typeof setTimeout>;
 };
+const startupError =
+  'Python could not start. Check your connection and try again.';
+
+/** One isolated worker; a failed import must be retried in a fresh worker. */
 export function useEngine() {
-  const worker = useRef<Worker | null>(null),
-    pending = useRef<Map<number, Pending>>(new Map()),
-    serial = useRef(0);
+  const worker = useRef<Worker | null>(null);
+  const pending = useRef<Map<number, Request>>(new Map());
+  const serial = useRef(0);
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>(
     'idle',
   );
-  const stop = useCallback(() => {
+  const dispose = useCallback((message: string) => {
     worker.current?.terminate();
     worker.current = null;
-    for (const req of pending.current.values()) {
-      clearTimeout(req.timer);
-      req.reject(new Error('Run cancelled.'));
+    for (const request of pending.current.values()) {
+      clearTimeout(request.timer);
+      request.reject(new Error(message));
     }
     pending.current.clear();
-    setStatus('idle');
   }, []);
-  useEffect(
-    () => () => {
-      worker.current?.terminate();
-      worker.current = null;
-      for (const req of pending.current.values()) {
-        clearTimeout(req.timer);
-        req.reject(new Error('Lab closed'));
-      }
-      pending.current.clear();
-    },
-    [],
-  );
+  const stop = useCallback(() => {
+    dispose('Run cancelled.');
+    setStatus('idle');
+  }, [dispose]);
+  useEffect(() => () => dispose('Lab closed.'), [dispose]);
   const run = useCallback(
     (config: Config) =>
       new Promise<Comparison>((resolve, reject) => {
-        if (!worker.current) {
-          setStatus('loading');
-          const w = new Worker('/python-worker.js', { type: 'module' });
-          worker.current = w;
-          w.onmessage = ({ data }) => {
-            const req = pending.current.get(data.id);
-            if (!req) return;
-            clearTimeout(req.timer);
-            pending.current.delete(data.id);
-            if (data.error) {
-              setStatus('error');
-              req.reject(new Error(data.error));
-            } else {
-              setStatus('ready');
-              req.resolve(data.result);
-            }
-          };
-          w.onerror = () => {
-            setStatus('error');
-            for (const req of pending.current.values()) {
-              clearTimeout(req.timer);
-              req.reject(
-                new Error(
-                  'Python could not start. Check your connection and try again.',
-                ),
-              );
-            }
-            pending.current.clear();
-            w.terminate();
-            worker.current = null;
-          };
+        if (pending.current.size) {
+          reject(new Error('A comparison is already running.'));
+          return;
         }
-        const id = ++serial.current;
-        const timer = setTimeout(() => {
-          pending.current.delete(id);
-          worker.current?.terminate();
-          worker.current = null;
+        try {
+          if (!worker.current) {
+            setStatus('loading');
+            const instance = new Worker('/python-worker.js', {
+              type: 'module',
+            });
+            worker.current = instance;
+            instance.onmessage = ({ data }) => {
+              if (worker.current !== instance) return;
+              const request = pending.current.get(data.id);
+              if (!request) return;
+              if (data.error || !data.result) {
+                dispose(
+                  'The comparison could not finish. Try again, or run the example locally.',
+                );
+                setStatus('error');
+                return;
+              }
+              clearTimeout(request.timer);
+              pending.current.delete(data.id);
+              setStatus('ready');
+              request.resolve(data.result);
+            };
+            instance.onerror = () => {
+              if (worker.current !== instance) return;
+              dispose(startupError);
+              setStatus('error');
+            };
+          }
+          const id = ++serial.current;
+          const timer = setTimeout(() => {
+            dispose(
+              'Python took longer than 90 seconds. Check your connection and try again.',
+            );
+            setStatus('error');
+          }, 90000);
+          pending.current.set(id, { resolve, reject, timer });
+          worker.current.postMessage({ id, config });
+        } catch {
+          dispose(startupError);
           setStatus('error');
-          reject(
-            new Error(
-              'Python took too long to load. Please retry on a stable connection.',
-            ),
-          );
-        }, 90000);
-        pending.current.set(id, { resolve, reject, timer });
-        worker.current.postMessage({ id, config });
+          reject(new Error(startupError));
+        }
       }),
-    [],
+    [dispose],
   );
   return { run, status, stop };
 }

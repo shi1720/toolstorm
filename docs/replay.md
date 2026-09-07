@@ -17,9 +17,9 @@ Credential key matching ignores case and treats hyphens like underscores. Litera
 
 This is not a general PII or secret detector. Keep rule/tool names and invocation/effect identifiers nonsecret. A secret in free-form text needs an explicit literal filter. Disable payload capture for sensitive or non-JSON tools: `Storm(capture=False)`. This disables replay. Inspect any exported artifact before sharing it.
 
-Limits: 32 JSON nesting levels, 128 KB per captured payload, 8 MB per loaded cassette, at most 10,000 calls and 10,000 effects, and at most 100 rules. These are bounds, not a claim that every maximum-size combination is cheap. A complete large report can exceed the cassette limit; reduce payloads or capture fewer calls.
+Limits: 32 JSON nesting levels for a complete report (29 for payloads, reserving three levels for the envelope), 128 KB per captured payload, 8 MB per loaded cassette, at most 10,000 calls and 10,000 effects, and at most 100 rules. These are bounds, not a claim that every maximum-size combination is cheap. A complete large report can exceed the cassette limit; reduce payloads or capture fewer calls.
 
-If **output** capture cannot serialize a successful result, the wrapper returns the original value and sets `capture_error`. Replay rejects it rather than substituting an invented result. Malformed captured arguments fail before the tool runs. `Cassette.save()` uses an atomic replace and owner-readable temporary file on platforms that implement those permissions.
+If **output** capture cannot serialize a successful result, the wrapper returns the original value and sets `capture_error`. Replay rejects it rather than substituting an invented result. Malformed captured arguments fail before the tool runs. Replacement rule payloads must be capturable at construction, even when unused or `capture=False`, because rule configuration is always included in a report. `Cassette.save()` uses an atomic replace and owner-readable temporary file on platforms that implement those permissions.
 
 ## Matching
 

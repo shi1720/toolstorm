@@ -61,3 +61,7 @@ An absent effect can make an upper-bound check pass. Pair it with a task-complet
 ## pytest fixture
 
 Install `toolstorm` with pytest available and pytest discovers the `storm_factory` plugin. `storm_factory(rules, require_triggered=True, **storm_options)` creates an isolated run. Teardown checks actual fault coverage. Set `require_triggered=False` only for tests which deliberately permit unexercised rules.
+
+## Capture limits
+
+Payloads reserve three levels for the report envelope: up to 29 nested levels and 128 KB per capture. Uncapturable return values still reach the caller and set `capture_error`; invalid captured arguments fail before execution. Replacement configurations must be capturable when constructing a Storm, including when call capture is disabled. Full artifacts have separate size limits; see [replay.md](replay.md).

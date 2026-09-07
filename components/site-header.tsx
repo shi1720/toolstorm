@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { ArrowUpRight, CodeXml, Zap } from 'lucide-react';
-
+import { ArrowUpRight } from 'lucide-react';
+import { version, repository } from '@/lib/product';
 export function SiteHeader({
   active = 'lab',
 }: {
@@ -8,42 +8,42 @@ export function SiteHeader({
 }) {
   return (
     <header className="site-header">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <div className="header-inner">
         <Link href="/" className="brand" aria-label="ToolStorm home">
-          <span className="brand-icon">
-            <Zap size={22} fill="currentColor" />
+          <span className="brand-mark" aria-hidden="true">
+            <i />
+            <i />
+            <i />
           </span>
-          <span>
-            toolstorm<span className="brand-dot">.</span>
-          </span>
-          <span className="version">v0.1.0</span>
+          ToolStorm<span className="version">{version}</span>
         </Link>
         <nav aria-label="Main navigation">
-          <Link href="/" aria-current={active === 'lab' ? 'page' : undefined}>
-            The lab
-          </Link>
-          <Link
-            href="/recipes"
-            aria-current={active === 'recipes' ? 'page' : undefined}
-          >
-            Recipes
-          </Link>
-          <Link
-            href="/docs"
-            aria-current={active === 'docs' ? 'page' : undefined}
-          >
-            Documentation
-          </Link>
+          {(
+            [
+              ['lab', '/', 'Lab'],
+              ['recipes', '/recipes', 'Scenarios'],
+              ['docs', '/docs', 'Documentation'],
+            ] as const
+          ).map(([id, href, label]) => (
+            <Link
+              key={id}
+              href={href}
+              aria-current={active === id ? 'page' : undefined}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
         <a
           className="github-link"
-          href="https://github.com/shi1720/toolstorm"
+          href={repository}
           target="_blank"
           rel="noreferrer"
         >
-          <CodeXml size={17} />
-          <span>GitHub</span>
-          <ArrowUpRight size={15} />
+          GitHub <ArrowUpRight size={16} />
         </a>
       </div>
     </header>
@@ -52,13 +52,11 @@ export function SiteHeader({
 export function SiteFooter() {
   return (
     <footer className="site-footer">
+      <span>ToolStorm · Python tool testing</span>
       <span>
-        <Zap size={14} /> Made for the days your tools aren’t.
-      </span>
-      <span>
-        Python ≥3.10 <i /> MIT license <i />{' '}
-        <a href="https://github.com/shi1720/toolstorm">
-          Open source <ArrowUpRight size={13} />
+        Python ≥3.10 <span aria-hidden="true">/</span> MIT licensed{' '}
+        <a href={repository}>
+          Source <ArrowUpRight size={14} />
         </a>
       </span>
     </footer>

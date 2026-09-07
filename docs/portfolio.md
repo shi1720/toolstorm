@@ -12,9 +12,9 @@ ToolStorm models the execution boundary explicitly: failures before execution, a
 
 ## A two-minute demonstration
 
-1. Open the lab on **Lost acknowledgement**. Press **Run the storm**. Python executes locally in a worker.
-2. Select **The retry enthusiast**. It completes the task but produces two shipments. Open **Contracts** to see the failed side-effect assertion.
-3. Select **The realist**. It reuses an idempotency key and produces one shipment. Open the failed first shipping call to inspect the commit that preceded the lost response.
+1. Open the lab on **Lost acknowledgement**. Press **Run comparison**. Python executes locally in a worker.
+2. Select **Unchecked retries**. It completes the task but produces two shipments. Open **Checks** to see the failed side-effect assertion.
+3. Select **Validated retries**. It reuses an idempotency key and produces one shipment. Open the failed first shipping call to inspect the commit that preceded the lost response.
 4. Switch to **Rate limit**. Compare immediate retries with honoring the retry hint. Switch to **Sustained outage** to demonstrate that honest, bounded failure can be the correct outcome.
 5. Export a run. Inspect it with the CLI. Show the example that records a cassette, then replays without invoking wrapped live code.
 

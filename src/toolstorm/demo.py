@@ -25,14 +25,14 @@ from .serialization import fingerprint
 
 SCENARIOS: dict[str, dict[str, Any]] = {
     "lost_ack": {
-        "title": "The lost acknowledgement",
+        "title": "Lost acknowledgement",
         "short": "Lost acknowledgement",
         "code": "INC-001",
         "category": "SIDE EFFECTS",
-        "severity": "Critical",
         "icon": "radio",
         "description": (
-            "The shipment is booked. The confirmation disappears. Is another attempt safe?"
+            "The first shipment commits, then its confirmation is lost. "
+            "A retry may create a second shipment."
         ),
         "lesson": (
             "A successful retry can hide a duplicate shipment. Use the same idempotency "
@@ -48,11 +48,10 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         ],
     },
     "rate_limit": {
-        "title": "Everybody wants it now",
+        "title": "Rate-limited inventory reads",
         "short": "Rate limit",
         "code": "INC-002",
         "category": "RECOVERY",
-        "severity": "High",
         "icon": "gauge",
         "description": (
             "Inventory rejects the first two reads with a retry-after hint. Can the "
@@ -73,14 +72,13 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         ],
     },
     "schema_drift": {
-        "title": "Looks like JSON. Isn't a contract.",
+        "title": "Invalid inventory response",
         "short": "Malformed response",
         "code": "INC-003",
         "category": "VALIDATION",
-        "severity": "High",
         "icon": "braces",
         "description": (
-            "Inventory returns a truthy string and a missing warehouse. Will the agent "
+            "Inventory returns a truthy string and a missing warehouse. Will the policy "
             "validate before acting?"
         ),
         "lesson": (
@@ -98,11 +96,10 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         ],
     },
     "timeout": {
-        "title": "Hello? Anyone there?",
+        "title": "Inventory read timeout",
         "short": "Read timeout",
         "code": "INC-004",
         "category": "RECOVERY",
-        "severity": "Medium",
         "icon": "clock",
         "description": (
             "The first inventory call times out before execution. Read retries can "
@@ -117,11 +114,10 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         ],
     },
     "latency": {
-        "title": "Your tool is on a coffee break",
+        "title": "Slow inventory response",
         "short": "Slow dependency",
         "code": "INC-005",
         "category": "LATENCY",
-        "severity": "Medium",
         "icon": "timer",
         "description": (
             "Inventory adds 1.4 seconds before returning. The task works, but does it "
@@ -142,11 +138,10 @@ SCENARIOS: dict[str, dict[str, Any]] = {
         ],
     },
     "blackout": {
-        "title": "The service has left the chat",
+        "title": "Sustained inventory outage",
         "short": "Sustained outage",
         "code": "INC-006",
         "category": "TERMINATION",
-        "severity": "Critical",
         "icon": "unplug",
         "description": (
             "Every inventory read fails. Good behavior means stopping honestly without "
@@ -161,18 +156,18 @@ SCENARIOS: dict[str, dict[str, Any]] = {
 }
 POLICIES: dict[str, dict[str, str]] = {
     "optimistic": {
-        "name": "The optimist",
-        "description": "One attempt. Everything will be fine.",
+        "name": "No retries",
+        "description": "One attempt per operation. No output validation.",
         "code": "No retries · no validation",
     },
     "retry": {
-        "name": "The retry enthusiast",
-        "description": "If at first you don't succeed, do it again.",
+        "name": "Unchecked retries",
+        "description": "Retry every error without an idempotency key.",
         "code": "3 attempts · fresh write each time",
     },
     "resilient": {
-        "name": "The realist",
-        "description": "Validate. Back off. Keep writes idempotent.",
+        "name": "Validated retries",
+        "description": "Validate outputs, back off, and reuse write keys.",
         "code": "3 attempts · bounded, stable-key retries",
     },
 }
@@ -344,7 +339,7 @@ def run_comparison(
 ) -> dict[str, Any]:
     return {
         "schema_version": 1,
-        "engine_version": "0.1.0",
+        "engine_version": "0.2.0",
         "scenario": scenario,
         "config": {
             "scenario": scenario,

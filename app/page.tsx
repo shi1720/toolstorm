@@ -6,5 +6,11 @@ export default async function Home({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { config, policy } = readConfig(await searchParams);
-  return <Lab initialConfig={config} initialPolicy={policy} />;
+  return (
+    <Lab
+      key={JSON.stringify([config, policy])}
+      initialConfig={config}
+      initialPolicy={policy}
+    />
+  );
 }

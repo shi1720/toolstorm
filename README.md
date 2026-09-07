@@ -1,19 +1,12 @@
-<div align="center">
+# ToolStorm
 
-# ⚡ ToolStorm
+**Test recovery from Python tool failures.** Inject faults at the execution boundary, check committed effects, and replay recorded calls offline.
 
-### Give your agent a bad day. Before your users do.
-
-Deterministic tool failures · side-effect contracts · strict offline replay
-
-[**Try the interactive lab →**](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project pitch](docs/portfolio.md)
+[Interactive lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project overview](docs/portfolio.md)
 
 [![CI](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml/badge.svg)](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)
-![Dependencies](https://img.shields.io/badge/runtime_dependencies-0-5F7935)
-[![License: MIT](https://img.shields.io/badge/license-MIT-C8E995)](LICENSE)
-
-</div>
+[![License: MIT](https://img.shields.io/badge/license-MIT-245bd6)](LICENSE)
+Python 3.10+ · No runtime dependencies
 
 Your agent calls a shipping tool. The shipment is created. The response disappears.
 
@@ -24,12 +17,12 @@ A response-based success check misses this. ToolStorm injects the lost acknowled
 ```text
 $ toolstorm demo --scenario lost_ack --policy all
 
-FAIL  The optimist           2 calls · 1 shipment  · no confirmation
-FAIL  The retry enthusiast   3 calls · 2 shipments · duplicate effect
-PASS  The realist            3 calls · 1 shipment  · idempotent recovery
+FAIL  No retries             2 calls · 1 shipment  · no confirmation
+FAIL  Unchecked retries      3 calls · 2 shipments · duplicate effect
+PASS  Validated retries      3 calls · 1 shipment  · idempotent recovery
 ```
 
-[![The ToolStorm lab showing executed Python results and a passing idempotent recovery policy](docs/assets/lab.png)](https://toolstorm-shi1720.sg127977958.chatgpt.site)
+[![ToolStorm comparing recovery policies and exposing a duplicate shipment](docs/assets/lab.png)](https://toolstorm-shi1720.sg127977958.chatgpt.site)
 
 **For:** agent developers writing pytest regressions, tool authors testing retry behavior, and engineers building reproducible failure environments. ToolStorm is a small testing library; your application owns retry, backoff, validation, and idempotency.
 
@@ -39,13 +32,13 @@ Python 3.10+. No model, API key, Docker daemon, or runtime dependency is require
 
 ```bash
 # Tagged source install. This release is not published on PyPI.
-pip install "toolstorm @ git+https://github.com/shi1720/toolstorm.git@v0.1.0"
+pip install "toolstorm @ git+https://github.com/shi1720/toolstorm.git@v0.2.0"
 
 toolstorm demo --policy all
 toolstorm demo --policy resilient --fail-on-contract
 ```
 
-The [browser lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) executes the **same Python source** in a Pyodide Web Worker. The initial page shows a labeled, previously executed example. Press **Run the storm** to execute all three policies locally. Change the seed, probability, and call budget; inspect calls and contracts; export a run or share its configuration.
+The [browser lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) executes the **same Python source** in a Pyodide Web Worker. The initial page shows a labeled, previously executed example. Press **Run comparison** to execute all three policies locally. Change the seed, probability, and call budget; inspect calls and contracts; export the selected result or copy a link to its settings. The first run downloads about 13 MB of Python runtime assets; the comparison then runs entirely in your browser.
 
 ## The smallest useful test
 
@@ -87,7 +80,7 @@ Change the second key to `"new-attempt"` and the duplicate-effect assertion fail
 
 | Capability | Useful because |
 | --- | --- |
-| Six faults with explicit execution phases | A failed read and an acknowledged-lost write require different recovery behavior. |
+| Six faults with explicit execution phases | A failed read and an write with a lost acknowledgement require different recovery behavior. |
 | Stable seed + independently hashed decisions | Calls to another tool do not shift an existing tool's random schedule. |
 | Eligible / selected / triggered coverage | A misspelled target or a post-call fault that never actually fires cannot silently pass. |
 | Explicit commit evidence | A successful response cannot hide duplicate effects. |
@@ -97,11 +90,11 @@ Change the second key to `"new-attempt"` and the duplicate-effect assertion fail
 | Versioned, bounded, redacted JSON | Inspect evidence without pickle, dynamic exception imports, or default exception-message capture. |
 | pytest fixture + CLI | Use the library in normal test suites and CI. |
 
-### Six ways to ruin a perfect demo
+### Included failure scenarios
 
 | Recipe | Failure | What the test reveals |
 | --- | --- | --- |
-| `lost_ack` | Commit succeeds; acknowledgement is lost | Retrying with a fresh key duplicates a shipment. |
+| `lost_ack` | Commit succeeds; acknowledgement is lost | Retrying without idempotency duplicates a shipment. |
 | `rate_limit` | First two inventory reads are rejected | The caller must handle retry hints within its budget. |
 | `schema_drift` | Valid JSON contains the wrong field types | Truthy data is not a validated response. |
 | `timeout` | First inventory read fails before execution | A bounded read retry can recover. |
@@ -205,7 +198,7 @@ CI tests Python 3.10–3.14, runs the examples, checks types and lint, builds th
 
 ## Boundaries worth knowing
 
-- **Beta release, `0.1.0`.** It is tested software, not a claim of production adoption or a stable 1.x API.
+- **Beta release, `0.2.0`.** It is tested software, not a claim of production adoption or a stable 1.x API.
 - Fault decisions are deterministic for a fixed seed and invocation schedule. Model reasoning and arbitrary tool internals are outside that guarantee. Same-tool concurrency needs explicit invocation keys; ordinal filters and rule limits remain order-dependent.
 - `response_lost` simulates acknowledgement ambiguity. It does not discover whether a live remote service committed a write.
 - A timeout fault is synthetic. The wrapper does not preempt or cancel a hung underlying function.

@@ -13,8 +13,7 @@ import {
 import { SiteHeader, SiteFooter } from '@/components/site-header';
 import { CopyButton } from '@/components/copy-button';
 export const metadata: Metadata = { title: 'Quickstart — ToolStorm' };
-const install =
-  'pip install "toolstorm @ git+https://github.com/shi1720/toolstorm.git@v0.1.0"';
+import { install } from '@/lib/product';
 const sample = `from toolstorm import Storm, Rule, Contract, ResponseLost, VirtualClock\n\nstorm = Storm(\n    [Rule("lost-ack", "ship", "response_lost", calls=(1,))],\n    seed=42, clock=VirtualClock(),\n)\nshipments = []\nreceipts = {}\n\n@storm.tool("ship")\ndef ship(order: str, key: str):\n    if key in receipts:\n        return receipts[key]\n    shipments.append(order)\n    storm.effect("shipment", order)  # At the actual commit.\n    receipts[key] = {"id": len(shipments)}\n    return receipts[key]\n\ntry:\n    ship("order-1729", key="order-1729")\nexcept ResponseLost:\n    ship("order-1729", key="order-1729")\n\nContract(storm.report())\\\n    .require_triggered()\\\n    .no_duplicate_effects()\\\n    .assert_valid()`;
 const replay = `from toolstorm import Cassette\n\nCassette.from_report(storm.report()).save("incident.json")\n\nwith Cassette.load("incident.json").replay() as replay:\n    offline_ship = replay.tool("ship")(ship)\n    try:\n        offline_ship("order-1729", key="order-1729")\n    except ResponseLost:\n        offline_ship("order-1729", key="order-1729")\n# Wrapped live code was never called. Unused calls fail on exit.`;
 const kinds = [
@@ -47,7 +46,7 @@ export default function Docs() {
   return (
     <>
       <SiteHeader active="docs" />
-      <main className="docs-main">
+      <main id="main" className="docs-main">
         <aside className="docs-nav">
           <p className="eyebrow">DOCUMENTATION</p>
           <a href="#quickstart">Quickstart</a>
@@ -61,20 +60,16 @@ export default function Docs() {
         </aside>
         <article className="docs-article">
           <p className="eyebrow">
-            <BookOpen size={13} /> THE FIELD GUIDE
+            <BookOpen size={13} /> QUICKSTART
           </p>
-          <h1>
-            Make failure
-            <br />
-            part of the test.
-          </h1>
+          <h1>Test a real recovery path.</h1>
           <p className="doc-lede">
             ToolStorm wraps the tools your agent already uses. You choose the
             failure. Your application decides how to recover. Contracts check
             the evidence.
           </p>
           <section id="quickstart">
-            <h2>Up and running in a minute.</h2>
+            <h2>Install and run the example</h2>
             <p>
               Requires Python 3.10 or newer. The core library has no runtime
               dependencies. Install the tagged release directly from GitHub:
@@ -92,14 +87,14 @@ export default function Docs() {
             <div className="doc-note">
               <Zap size={18} />
               <span>
-                The optimist cannot confirm the shipment. The retry enthusiast
-                creates two. The realist retries with the same key and creates
-                one.
+                Without retries, the shipment is not confirmed. Unchecked
+                retries create two shipments. Validated retries reuse the write
+                key and create one.
               </span>
             </div>
           </section>
           <section id="first-test">
-            <h2>A write happened. The response didn’t.</h2>
+            <h2>Test a lost acknowledgement</h2>
             <p>
               Record the effect where your test service commits it. Reusing the
               same idempotency key turns a retry into a receipt lookup. Change
@@ -113,7 +108,7 @@ export default function Docs() {
             </p>
           </section>
           <section id="faults">
-            <h2>Six faults. Explicit semantics.</h2>
+            <h2>Fault semantics</h2>
             <p>
               Rule order matters: the first eligible probability hit wins. Call
               filters are 1-based per tool. Replacement faults skip live
@@ -147,7 +142,7 @@ export default function Docs() {
             </p>
           </section>
           <section id="replay">
-            <h2>Keep the incident. Lose the dependency.</h2>
+            <h2>Replay recorded tool calls offline</h2>
             <p>
               A cassette contains redacted, signature-bound calls and returned
               results. Replay supplies those observations in order and never
@@ -170,7 +165,7 @@ export default function Docs() {
             </p>
           </section>
           <section id="guarantees">
-            <h2>Clear boundaries make better tests.</h2>
+            <h2>Guarantees and limits</h2>
             <div className="guarantee-grid">
               {[
                 [
@@ -213,7 +208,7 @@ export default function Docs() {
           </section>
           <Link className="doc-next" href="/recipes">
             <span>
-              <small>NEXT UP</small>Choose your failure mode.
+              <small>SCENARIOS</small>Explore the six failure scenarios.
             </span>
             <ArrowRight size={24} />
           </Link>
