@@ -162,7 +162,7 @@ POLICIES: dict[str, dict[str, str]] = {
     },
     "retry": {
         "name": "Unchecked retries",
-        "description": "Retry every error without an idempotency key.",
+        "description": "Up to 3 attempts. No validation or idempotency.",
         "code": "3 attempts · fresh write each time",
     },
     "resilient": {

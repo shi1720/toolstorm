@@ -104,10 +104,11 @@ export function RunEvidence({
   hydrated: boolean;
   provenance: string;
   stale: boolean;
-  onShare: () => void;
+  onShare: () => Promise<string>;
 }) {
   const [selected, setSelected] = useState<Call | null>(null);
   const [filter, setFilter] = useState('all');
+  const [shareMessage, setShareMessage] = useState('');
   const run = comparison.runs.find((r) => r.policy === policy)!;
   const result = finding(run);
   const snippet = `${install}\n\n# Run this scenario against all three scripted policies:\ntoolstorm demo --scenario ${comparison.scenario} --policy all \\\n  --seed ${comparison.config.seed} --probability ${comparison.config.probability} --max-calls ${comparison.config.max_calls}\n\n# Save and check the selected policy:\ntoolstorm demo --scenario ${comparison.scenario} --policy ${policy} \\\n  --seed ${comparison.config.seed} --probability ${comparison.config.probability} --max-calls ${comparison.config.max_calls} \\\n  --output incident.json --fail-on-contract\ntoolstorm check incident.json --max-calls ${comparison.config.max_calls}`;
@@ -162,7 +163,7 @@ export function RunEvidence({
               <th scope="col">Recovery policy</th>
               <th scope="col">Confirmation</th>
               <th scope="col">Shipments</th>
-              <th scope="col">Calls</th>
+              <th scope="col">Recorded calls</th>
               <th scope="col">Simulated time</th>
               <th scope="col">Checks</th>
             </tr>
@@ -198,7 +199,14 @@ export function RunEvidence({
                   {r.stats.effects}
                   <small> / 1 requested</small>
                 </td>
-                <td>{r.stats.calls}</td>
+                <td>
+                  {r.stats.calls}
+                  {r.report.budget_rejections > 0 && (
+                    <small className="refused-count">
+                      +{r.report.budget_rejections} refused
+                    </small>
+                  )}
+                </td>
                 <td>{time(r.stats.elapsed)}</td>
                 <td>
                   <span
@@ -219,7 +227,7 @@ export function RunEvidence({
           <button
             className="text-button"
             disabled={!hydrated}
-            onClick={onShare}
+            onClick={async () => setShareMessage(await onShare())}
           >
             <Copy size={15} /> Copy settings link
           </button>
@@ -232,6 +240,9 @@ export function RunEvidence({
           </button>
         </div>
       </div>
+      {shareMessage && (
+        <output className="share-message">{shareMessage}</output>
+      )}
       <Tabs className="evidence" defaultValue="trace">
         <TabsList variant="line">
           <TabsTrigger disabled={!hydrated} value="trace">
@@ -315,6 +326,12 @@ export function RunEvidence({
               })}
           </ol>
           <div className="trace-footnote">
+            {run.report.budget_rejections > 0 && (
+              <span>
+                {run.report.budget_rejections} additional attempt(s) refused by
+                the call limit.{' '}
+              </span>
+            )}
             {run.stats.faults} fault{run.stats.faults === 1 ? '' : 's'} injected
             · {run.stats.effects} committed shipment
             {run.stats.effects === 1 ? '' : 's'} · Select a call to inspect its

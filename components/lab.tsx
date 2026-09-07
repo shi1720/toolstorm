@@ -132,18 +132,14 @@ export function Lab({
       policy,
     }).toString();
     url.hash = '';
+    // Update before clipboard permissions can defer and outlive this page.
+    window.history.replaceState(window.history.state, '', url);
     try {
       await navigator.clipboard.writeText(url.href);
-      setNotice(
-        'Settings link copied. The recipient can run this comparison; results are not included.',
-      );
+      return 'Settings link copied. Results are not included; the recipient can run the comparison.';
     } catch {
-      setNotice(
-        'Clipboard unavailable. Copy the settings link from your address bar.',
-      );
+      return 'Clipboard unavailable. Copy the settings link from your address bar.';
     }
-    // Preserve the router state when replacing the address; no new history entry.
-    window.history.replaceState(window.history.state, '', url);
   }
   return (
     <>
@@ -181,7 +177,7 @@ export function Lab({
             >
               {(Object.keys(catalog.scenarios) as Scenario[]).map(
                 (id, index) => (
-                  <label
+                  <div
                     className={`scenario-option ${config.scenario === id ? 'chosen' : ''}`}
                     key={id}
                   >
@@ -197,7 +193,7 @@ export function Lab({
                       <strong>{catalog.scenarios[id].short}</strong>
                       <small>{phases[id]}</small>
                     </span>
-                  </label>
+                  </div>
                 ),
               )}
             </RadioGroup>
