@@ -1,4 +1,4 @@
-"""ToolStorm: prove recovery behavior at the tool boundary."""
+"""ToolStorm: test recovery behavior at the tool boundary."""
 
 from .clock import RealClock, VirtualClock
 from .contracts import Check, Contract

@@ -42,6 +42,12 @@ const source = spawnSync(
 );
 assert.equal(source.status, 0, source.stderr);
 const expected = JSON.parse(source.stdout);
+const manifest = JSON.parse(readFileSync('package.json', 'utf8'));
+assert.equal(
+  expected[0].engine_version,
+  manifest.version,
+  'Python and website release versions differ',
+);
 const py = await loadPyodide();
 py.FS.mkdirTree('/home/pyodide/toolstorm');
 for (const [name, code] of Object.entries(files))

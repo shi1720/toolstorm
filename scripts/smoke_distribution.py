@@ -30,6 +30,7 @@ import toolstorm
 from toolstorm.demo import run_demo
 assert str(Path(toolstorm.__file__).resolve()).startswith(str(Path('venv').resolve()))
 distribution = metadata.distribution('toolstorm')
+assert toolstorm.__version__ == distribution.version
 assert not any('extra ==' not in requirement for requirement in (distribution.requires or []))
 assert any(
     ep.group == 'pytest11' and ep.value == 'toolstorm.pytest_plugin'

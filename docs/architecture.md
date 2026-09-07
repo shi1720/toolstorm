@@ -125,3 +125,12 @@ The initial fixture is generated from Python, labeled as an example, and protect
 The core has no runtime dependencies and targets Python 3.10–3.14. The website uses React and Vinext/Cloudflare Workers. Vinext is beta infrastructure; the independently installable Python library is not coupled to its runtime.
 
 The release intentionally excludes production traffic interception, framework-specific runtime hooks, streaming, generators, distributed runners, model judges, and automatic test generation. The extension boundary is ordinary Python callables, rules, and versioned JSON evidence.
+
+
+### Browser lifecycle and result ownership
+
+The lab controller owns draft configuration; the evidence view owns selection, filters, and call inspection. A run returns an immutable result snapshot. Changing draft settings leaves the snapshot intact with an explicit warning. Export and sharing use the snapshot configuration.
+
+The worker hook accepts one comparison at a time. Errors, cancellation, timeout, and unmount terminate the worker and settle pending promises. A failed dynamic import is retried in a new worker so its rejected module cache cannot poison later runs. Request identity prevents a late result from replacing a newer run. Release-version query parameters keep worker and engine-bundle requests aligned with the deployed interface.
+
+Home starts a fresh experiment. Shared links initialize a new comparison configuration; they do not upload or embed result data. Clipboard permission is awaited only after updating the URL, preventing deferred permission handling from overwriting a later navigation.

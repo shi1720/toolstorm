@@ -2,7 +2,7 @@
 
 **Test recovery from Python tool failures.** Inject faults at the execution boundary, check committed effects, and replay recorded calls offline.
 
-[Interactive lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project overview](docs/portfolio.md)
+[Interactive lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project overview](docs/portfolio.md) · [Review notes](docs/review.md)
 
 [![CI](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml/badge.svg)](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-245bd6)](LICENSE)

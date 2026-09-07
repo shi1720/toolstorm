@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from . import __version__
 from .clock import VirtualClock
 from .contracts import Contract
 from .engine import Storm
@@ -339,7 +340,7 @@ def run_comparison(
 ) -> dict[str, Any]:
     return {
         "schema_version": 1,
-        "engine_version": "0.2.0",
+        "engine_version": __version__,
         "scenario": scenario,
         "config": {
             "scenario": scenario,
