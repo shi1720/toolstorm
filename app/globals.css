@@ -53,6 +53,9 @@ body {
 }
 
 :root {
+  /* Keep font shorthands valid before the runtime installs font variables. */
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --background: #f6f7f9;
   --foreground: #172024;
   --card: #f6f7f9;

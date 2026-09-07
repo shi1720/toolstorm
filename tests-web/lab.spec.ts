@@ -153,3 +153,38 @@ test('main pages have no serious or critical accessibility violations', async ({
   }
   expect(findings).toEqual([]);
 });
+
+test('initial HTML keeps readable typography before JavaScript attaches', async ({
+  browser,
+  page,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const initial = await context.newPage();
+    await initial.goto(
+      process.env.TOOLSTORM_BASE_URL || 'http://localhost:3000',
+    );
+    await expect(
+      initial.getByRole('button', { name: 'Run the storm', exact: true }),
+    ).toBeDisabled();
+    await page.goto('/');
+    await expect(
+      page.getByRole('button', { name: 'Run the storm', exact: true }),
+    ).toBeEnabled();
+    for (const selector of [
+      '.section-label',
+      '.eyebrow',
+      '.scenario-option small',
+    ]) {
+      const initialSizes = await initial
+        .locator(selector)
+        .evaluateAll((nodes) => nodes.map((n) => getComputedStyle(n).fontSize));
+      const interactiveSizes = await page
+        .locator(selector)
+        .evaluateAll((nodes) => nodes.map((n) => getComputedStyle(n).fontSize));
+      expect(initialSizes).toEqual(interactiveSizes);
+    }
+  } finally {
+    await context.close();
+  }
+});
