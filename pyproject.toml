@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "toolstorm"
+version = "0.1.0"
+description = "Deterministic tool failures, strict replay, and behavioral contracts for Python agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Shivam Gupta"}]
+keywords = ["agents", "testing", "fault-injection", "pytest", "replay", "resilience"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8.3,<10", "pytest-cov>=6,<8", "hypothesis>=6.120,<7", "ruff>=0.12,<1", "mypy>=1.15,<2", "build>=1.2,<2"]
+
+[project.scripts]
+toolstorm = "toolstorm.cli:main"
+
+[project.entry-points.pytest11]
+toolstorm = "toolstorm.pytest_plugin"
+
+[project.urls]
+Homepage = "https://toolstorm-shi1720.sg127977958.chatgpt.site"
+Repository = "https://github.com/shi1720/toolstorm"
+Documentation = "https://github.com/shi1720/toolstorm/tree/main/docs"
+Issues = "https://github.com/shi1720/toolstorm/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/toolstorm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+files = ["src/toolstorm"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/examples", "/docs", "/README.md", "/LICENSE", "/CONTRIBUTING.md", "/SECURITY.md", "/CHANGELOG.md", "/pyproject.toml"]

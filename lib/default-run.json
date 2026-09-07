@@ -1,0 +1,530 @@
+{
+  "schema_version": 1,
+  "engine_version": "0.1.0",
+  "scenario": "lost_ack",
+  "config": {
+    "scenario": "lost_ack",
+    "seed": 42,
+    "probability": 1.0,
+    "max_calls": 8
+  },
+  "runs": [
+    {
+      "scenario": "lost_ack",
+      "policy": "optimistic",
+      "seed": 42,
+      "config": {
+        "scenario": "lost_ack",
+        "seed": 42,
+        "probability": 1.0,
+        "max_calls": 8
+      },
+      "outcome": {
+        "completed": false,
+        "reason": "ResponseLost"
+      },
+      "shipments": [
+        {
+          "shipment_id": "SHP-0001",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        }
+      ],
+      "report": {
+        "seed": 42,
+        "clock": "VirtualClock",
+        "calls": [
+          {
+            "id": 1,
+            "tool": "check_inventory",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.0,
+            "parent_id": null,
+            "elapsed": 0.08,
+            "status": "ok",
+            "fault": null,
+            "kind": null,
+            "executed": true,
+            "injected": false,
+            "arguments": {
+              "sku": "CLOUD-01"
+            },
+            "output": {
+              "sku": "CLOUD-01",
+              "available": true,
+              "warehouse": "AMS-01"
+            },
+            "error": null,
+            "capture_error": false
+          },
+          {
+            "id": 2,
+            "tool": "create_shipment",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.08,
+            "parent_id": null,
+            "elapsed": 0.12,
+            "status": "error",
+            "fault": "lost-receipt",
+            "kind": "response_lost",
+            "executed": true,
+            "injected": true,
+            "arguments": {
+              "order_id": "order-1729",
+              "warehouse": "AMS-01",
+              "idempotency_key": null
+            },
+            "output": null,
+            "error": {
+              "type": "ResponseLost",
+              "known": true
+            },
+            "capture_error": false
+          }
+        ],
+        "effects": [
+          {
+            "name": "shipment",
+            "key": "order-1729",
+            "call_id": 2,
+            "at": 0.2,
+            "identity": 1,
+            "redacted": false
+          }
+        ],
+        "rules": [
+          {
+            "name": "lost-receipt",
+            "tool": "create_shipment",
+            "kind": "response_lost",
+            "calls": [
+              1
+            ],
+            "probability": 1.0,
+            "limit": null,
+            "delay": 0.0,
+            "replacement": null
+          }
+        ],
+        "coverage": {
+          "lost-receipt": {
+            "eligible": 1,
+            "selected": 1,
+            "triggered": 1
+          }
+        },
+        "budget_rejections": 0,
+        "capture": true,
+        "schema_version": 1
+      },
+      "contract": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Fault exercised: lost-receipt",
+            "passed": true,
+            "detail": "Triggered 1 time(s)"
+          },
+          {
+            "name": "No duplicate side effects",
+            "passed": true,
+            "detail": "0 duplicate effect(s) across 1 commits"
+          },
+          {
+            "name": "Call budget",
+            "passed": true,
+            "detail": "2 / 8 calls"
+          },
+          {
+            "name": "Task completed",
+            "passed": false,
+            "detail": "No confirmed shipment"
+          },
+          {
+            "name": "Latency budget",
+            "passed": true,
+            "detail": "0.20s / 1.50s virtual time"
+          }
+        ]
+      },
+      "stats": {
+        "calls": 2,
+        "effects": 1,
+        "faults": 1,
+        "elapsed": 0.2
+      },
+      "digest": "5e0a7029c593f053515d65a0cf5798bf961da72b4d44d28c99fa39c93608f84f"
+    },
+    {
+      "scenario": "lost_ack",
+      "policy": "retry",
+      "seed": 42,
+      "config": {
+        "scenario": "lost_ack",
+        "seed": 42,
+        "probability": 1.0,
+        "max_calls": 8
+      },
+      "outcome": {
+        "completed": true,
+        "receipt": {
+          "shipment_id": "SHP-0002",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        }
+      },
+      "shipments": [
+        {
+          "shipment_id": "SHP-0001",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        },
+        {
+          "shipment_id": "SHP-0002",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        }
+      ],
+      "report": {
+        "seed": 42,
+        "clock": "VirtualClock",
+        "calls": [
+          {
+            "id": 1,
+            "tool": "check_inventory",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.0,
+            "parent_id": null,
+            "elapsed": 0.08,
+            "status": "ok",
+            "fault": null,
+            "kind": null,
+            "executed": true,
+            "injected": false,
+            "arguments": {
+              "sku": "CLOUD-01"
+            },
+            "output": {
+              "sku": "CLOUD-01",
+              "available": true,
+              "warehouse": "AMS-01"
+            },
+            "error": null,
+            "capture_error": false
+          },
+          {
+            "id": 2,
+            "tool": "create_shipment",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.08,
+            "parent_id": null,
+            "elapsed": 0.12,
+            "status": "error",
+            "fault": "lost-receipt",
+            "kind": "response_lost",
+            "executed": true,
+            "injected": true,
+            "arguments": {
+              "order_id": "order-1729",
+              "warehouse": "AMS-01",
+              "idempotency_key": null
+            },
+            "output": null,
+            "error": {
+              "type": "ResponseLost",
+              "known": true
+            },
+            "capture_error": false
+          },
+          {
+            "id": 3,
+            "tool": "create_shipment",
+            "ordinal": 2,
+            "key": "#2",
+            "started": 0.2,
+            "parent_id": null,
+            "elapsed": 0.12,
+            "status": "ok",
+            "fault": null,
+            "kind": null,
+            "executed": true,
+            "injected": false,
+            "arguments": {
+              "order_id": "order-1729",
+              "warehouse": "AMS-01",
+              "idempotency_key": null
+            },
+            "output": {
+              "shipment_id": "SHP-0002",
+              "order_id": "order-1729",
+              "warehouse": "AMS-01"
+            },
+            "error": null,
+            "capture_error": false
+          }
+        ],
+        "effects": [
+          {
+            "name": "shipment",
+            "key": "order-1729",
+            "call_id": 2,
+            "at": 0.2,
+            "identity": 1,
+            "redacted": false
+          },
+          {
+            "name": "shipment",
+            "key": "order-1729",
+            "call_id": 3,
+            "at": 0.32,
+            "identity": 1,
+            "redacted": false
+          }
+        ],
+        "rules": [
+          {
+            "name": "lost-receipt",
+            "tool": "create_shipment",
+            "kind": "response_lost",
+            "calls": [
+              1
+            ],
+            "probability": 1.0,
+            "limit": null,
+            "delay": 0.0,
+            "replacement": null
+          }
+        ],
+        "coverage": {
+          "lost-receipt": {
+            "eligible": 1,
+            "selected": 1,
+            "triggered": 1
+          }
+        },
+        "budget_rejections": 0,
+        "capture": true,
+        "schema_version": 1
+      },
+      "contract": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "Fault exercised: lost-receipt",
+            "passed": true,
+            "detail": "Triggered 1 time(s)"
+          },
+          {
+            "name": "No duplicate side effects",
+            "passed": false,
+            "detail": "1 duplicate effect(s) across 2 commits"
+          },
+          {
+            "name": "Call budget",
+            "passed": true,
+            "detail": "3 / 8 calls"
+          },
+          {
+            "name": "Task completed",
+            "passed": true,
+            "detail": "Shipment confirmed"
+          },
+          {
+            "name": "Latency budget",
+            "passed": true,
+            "detail": "0.32s / 1.50s virtual time"
+          }
+        ]
+      },
+      "stats": {
+        "calls": 3,
+        "effects": 2,
+        "faults": 1,
+        "elapsed": 0.32
+      },
+      "digest": "d7e6a5ac771da3f7f0465336917e17e0ba2fc9c874e37e31ee4843529d558ca7"
+    },
+    {
+      "scenario": "lost_ack",
+      "policy": "resilient",
+      "seed": 42,
+      "config": {
+        "scenario": "lost_ack",
+        "seed": 42,
+        "probability": 1.0,
+        "max_calls": 8
+      },
+      "outcome": {
+        "completed": true,
+        "receipt": {
+          "shipment_id": "SHP-0001",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        }
+      },
+      "shipments": [
+        {
+          "shipment_id": "SHP-0001",
+          "order_id": "order-1729",
+          "warehouse": "AMS-01"
+        }
+      ],
+      "report": {
+        "seed": 42,
+        "clock": "VirtualClock",
+        "calls": [
+          {
+            "id": 1,
+            "tool": "check_inventory",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.0,
+            "parent_id": null,
+            "elapsed": 0.08,
+            "status": "ok",
+            "fault": null,
+            "kind": null,
+            "executed": true,
+            "injected": false,
+            "arguments": {
+              "sku": "CLOUD-01"
+            },
+            "output": {
+              "sku": "CLOUD-01",
+              "available": true,
+              "warehouse": "AMS-01"
+            },
+            "error": null,
+            "capture_error": false
+          },
+          {
+            "id": 2,
+            "tool": "create_shipment",
+            "ordinal": 1,
+            "key": "#1",
+            "started": 0.08,
+            "parent_id": null,
+            "elapsed": 0.12,
+            "status": "error",
+            "fault": "lost-receipt",
+            "kind": "response_lost",
+            "executed": true,
+            "injected": true,
+            "arguments": {
+              "order_id": "order-1729",
+              "warehouse": "AMS-01",
+              "idempotency_key": "order-1729"
+            },
+            "output": null,
+            "error": {
+              "type": "ResponseLost",
+              "known": true
+            },
+            "capture_error": false
+          },
+          {
+            "id": 3,
+            "tool": "create_shipment",
+            "ordinal": 2,
+            "key": "#2",
+            "started": 0.35,
+            "parent_id": null,
+            "elapsed": 0.12,
+            "status": "ok",
+            "fault": null,
+            "kind": null,
+            "executed": true,
+            "injected": false,
+            "arguments": {
+              "order_id": "order-1729",
+              "warehouse": "AMS-01",
+              "idempotency_key": "order-1729"
+            },
+            "output": {
+              "shipment_id": "SHP-0001",
+              "order_id": "order-1729",
+              "warehouse": "AMS-01"
+            },
+            "error": null,
+            "capture_error": false
+          }
+        ],
+        "effects": [
+          {
+            "name": "shipment",
+            "key": "order-1729",
+            "call_id": 2,
+            "at": 0.2,
+            "identity": 1,
+            "redacted": false
+          }
+        ],
+        "rules": [
+          {
+            "name": "lost-receipt",
+            "tool": "create_shipment",
+            "kind": "response_lost",
+            "calls": [
+              1
+            ],
+            "probability": 1.0,
+            "limit": null,
+            "delay": 0.0,
+            "replacement": null
+          }
+        ],
+        "coverage": {
+          "lost-receipt": {
+            "eligible": 1,
+            "selected": 1,
+            "triggered": 1
+          }
+        },
+        "budget_rejections": 0,
+        "capture": true,
+        "schema_version": 1
+      },
+      "contract": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "Fault exercised: lost-receipt",
+            "passed": true,
+            "detail": "Triggered 1 time(s)"
+          },
+          {
+            "name": "No duplicate side effects",
+            "passed": true,
+            "detail": "0 duplicate effect(s) across 1 commits"
+          },
+          {
+            "name": "Call budget",
+            "passed": true,
+            "detail": "3 / 8 calls"
+          },
+          {
+            "name": "Task completed",
+            "passed": true,
+            "detail": "Shipment confirmed"
+          },
+          {
+            "name": "Latency budget",
+            "passed": true,
+            "detail": "0.47s / 1.50s virtual time"
+          }
+        ]
+      },
+      "stats": {
+        "calls": 3,
+        "effects": 1,
+        "faults": 1,
+        "elapsed": 0.47
+      },
+      "digest": "336baa967e533342bd2640ab7116cdd803ec54f4caa3152e15f1f212509b79ef"
+    }
+  ]
+}

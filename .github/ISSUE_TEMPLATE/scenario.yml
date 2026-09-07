@@ -1,0 +1,17 @@
+name: Failure scenario
+description: Suggest a real tool failure worth testing.
+body:
+  - type: textarea
+    id: incident
+    attributes:
+      label: What fails, and when?
+      description: Does the tool fail before execution, after a commit, or while returning data?
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: What should the test prove?
+      description: Describe the broken behavior, corrected behavior, and observable evidence.
+    validations:
+      required: true
