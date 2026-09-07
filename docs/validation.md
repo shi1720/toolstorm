@@ -71,4 +71,4 @@ These are concrete defects addressed during development, not independent certifi
 - Vinext is a beta framework. The Python package is independent of the website stack.
 - Test dependencies are version-ranged; the website uses a committed lockfile. CI runs on hosted images whose underlying system packages may evolve.
 
-Refer to the linked GitHub Actions run for the exact release commit and job results. A successful build or coverage threshold alone should never be described as proof of production maturity.
+The [pre-release acceptance run](https://github.com/shi1720/toolstorm/actions/runs/34126404377) passed all five Python versions and all five browser tests, including the three-page accessibility scan. It also reported zero npm audit findings. The [workflow history](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml) records checks for subsequent documentation and release commits. A successful build or coverage threshold alone should never be described as proof of production maturity.

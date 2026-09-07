@@ -29,6 +29,8 @@ FAIL  The retry enthusiast   3 calls · 2 shipments · duplicate effect
 PASS  The realist            3 calls · 1 shipment  · idempotent recovery
 ```
 
+[![The ToolStorm lab showing executed Python results and a passing idempotent recovery policy](docs/assets/lab.png)](https://toolstorm-shi1720.sg127977958.chatgpt.site)
+
 **For:** agent developers writing pytest regressions, tool authors testing retry behavior, and engineers building reproducible failure environments. ToolStorm is a small testing library; your application owns retry, backoff, validation, and idempotency.
 
 ## Try it
