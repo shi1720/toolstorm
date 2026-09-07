@@ -45,6 +45,10 @@ test('real Python run exposes duplicate writes and the corrected policy', async 
   expect(exported.stats.effects).toBe(1);
   expect(exported.report.calls).toHaveLength(3);
   expect(errors).toEqual([]);
+  await page.getByRole('button', { name: 'Dismiss notification' }).click();
+  await page
+    .locator('.workspace')
+    .screenshot({ path: 'test-results/toolstorm-lab.png' });
   await page.screenshot({
     path: 'test-results/toolstorm-desktop.png',
     fullPage: true,
