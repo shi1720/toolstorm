@@ -109,14 +109,14 @@ flowchart TB
     B --> C[Scenario catalog + executed initial fixture]
     C --> UI[React lab / Cloudflare Worker]
     M --> W[Browser Web Worker]
-    CDN[Pinned Pyodide runtime from jsDelivr] --> W
+    A[Pinned Pyodide deployment assets] --> W
     UI -->|Bounded config only| W
     W -->|Python comparison JSON| UI
     UI --> E[Exported run JSON]
     E --> CLI[toolstorm inspect / check]
 ```
 
-The server serves the application and assets. There is no arbitrary-code execution endpoint, application database, account system, or API secret. All demo calls run in the visitor's browser against an in-memory service. Pyodide is a pinned external CDN dependency on first use; a load failure is shown with retry and CLI instructions. A 90-second worker watchdog and explicit cancellation terminate a stuck browser run.
+The server serves the application and assets. There is no arbitrary-code execution endpoint, application database, account system, or API secret. All demo calls run in the visitor's browser against an in-memory service. The build copies the pinned Pyodide runtime from the locked npm dependency into same-origin deployment assets; a load failure is shown with retry instructions. No third-party CDN request is needed to execute a demo. A 90-second worker watchdog and explicit cancellation terminate a stuck browser run.
 
 The initial fixture is generated from Python, labeled as an example, and protected by a source/bundle drift check. UI results belong to the executed configuration; pending configuration changes are visibly marked. Export downloads the selected run. Share links contain only scenario configuration, not a published result.
 

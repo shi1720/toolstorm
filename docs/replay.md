@@ -64,3 +64,5 @@ toolstorm check toolstorm-lost_ack-retry.json --max-calls 8
 CLI exit codes: **0** successful inspection/check, **1** a failed checked contract, **2** invalid arguments or input. `demo` returns 0 even for an intentionally failing negative control unless `--fail-on-contract` is supplied. `--cassette` requires one policy, not `all`.
 
 Internally consistent JSON can still be fabricated. A digest identifies report bytes; it is neither a signature nor proof of execution.
+
+Concurrent replay consumers serialize matching and consumption. A recorded call can be returned only once. Call ordering still follows acquisition order; replay does not reproduce the original thread scheduler.

@@ -4,7 +4,7 @@ The release is checked at three layers: library behavior, identical engine execu
 
 ## Python tests
 
-The pytest suite includes independent adversarial reproductions and property-based tests. It covers:
+The release suite contains **256 passing tests** with **93% statement coverage**. The pytest suite includes independent adversarial reproductions and property-based tests. It covers:
 
 - pre-call faults with zero live executions;
 - post-success acknowledgement loss with an actual committed effect;
@@ -57,6 +57,7 @@ Reviewers found and reproduced defects before release. Fixes are retained as reg
 8. A post-call rule counted as triggered even if the tool itself failed first.
 9. Nested wrapped calls were not consumed naturally during outer-boundary replay.
 10. Rate-limit tests did not initially assert advertised backoff.
+11. Two concurrent replay callers could consume the same recorded call; matching and consumption now share a lock.
 
 These are concrete defects addressed during development, not independent certification or a claim that no defects remain.
 
@@ -66,7 +67,7 @@ These are concrete defects addressed during development, not independent certifi
 - Virtual timing is a fixture model, not a performance measurement.
 - Side effects are explicitly instrumented, not automatically discovered.
 - A trace validator checks internal consistency, not authenticity or the original execution environment.
-- The public website needs the pinned Pyodide CDN on first run.
+- The public website downloads the pinned Pyodide runtime from the same deployment on first run. It requires a modern browser with WebAssembly and module workers.
 - Vinext is a beta framework. The Python package is independent of the website stack.
 - Test dependencies are version-ranged; the website uses a committed lockfile. CI runs on hosted images whose underlying system packages may evolve.
 

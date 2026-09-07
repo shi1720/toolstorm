@@ -27,6 +27,7 @@ export function useEngine() {
   useEffect(
     () => () => {
       worker.current?.terminate();
+      worker.current = null;
       for (const req of pending.current.values()) {
         clearTimeout(req.timer);
         req.reject(new Error('Lab closed'));
@@ -61,7 +62,7 @@ export function useEngine() {
               clearTimeout(req.timer);
               req.reject(
                 new Error(
-                  'Python could not start. Check your connection to the runtime CDN and try again.',
+                  'Python could not start. Check your connection and try again.',
                 ),
               );
             }

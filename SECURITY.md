@@ -8,4 +8,4 @@ Security-relevant boundaries include secret capture, arbitrary code execution fr
 
 ToolStorm is test instrumentation. It is not a process sandbox, network isolation layer, transaction manager, or production safety mechanism. Wrapped live tools still execute in capture mode unless a pre-call rule skips them. Use isolated fixtures and test credentials. Default redaction is not a complete secret or PII detector.
 
-The hosted lab accepts only bounded built-in scenario configurations. It has no arbitrary-code endpoint or secret-bearing server environment. Its Python runtime is loaded from a pinned third-party CDN in a browser worker; offline first-load availability is not guaranteed.
+The hosted lab accepts only bounded built-in scenario configurations. It has no arbitrary-code endpoint or secret-bearing server environment. Its Python runtime is copied unmodified from a pinned npm dependency and served as same-origin assets in a browser worker. First-load availability still requires a connection to the deployed site.

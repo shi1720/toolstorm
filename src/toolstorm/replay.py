@@ -6,6 +6,7 @@ import functools
 import inspect
 from collections.abc import Callable
 from pathlib import Path
+from threading import RLock
 from typing import Any, TypeVar, cast
 
 from .clock import duration
@@ -315,6 +316,7 @@ class Replay:
             c["status"] not in ("ok", "error") or c["capture_error"] for c in self._data["calls"]
         ):
             raise ConfigurationError("Replay requires complete, JSON-capturable calls")
+        self._lock = RLock()
         self._position = 0
         self._consumed: set[int] = set()
         roots: dict[int, int] = {}
@@ -334,33 +336,35 @@ class Replay:
             self.assert_consumed()
 
     def assert_consumed(self) -> None:
-        if self._failed:
-            raise ReplayMismatch("Replay previously diverged")
-        remaining = len(self._data["calls"]) - len(self._consumed)
-        if remaining:
-            raise ReplayMismatch(f"Replay ended with {remaining} unused call(s)")
+        with self._lock:
+            if self._failed:
+                raise ReplayMismatch("Replay previously diverged")
+            remaining = len(self._data["calls"]) - len(self._consumed)
+            if remaining:
+                raise ReplayMismatch(f"Replay ended with {remaining} unused call(s)")
 
     def _consume(self, name: str, arguments: Any) -> Any:
-        if self._failed:
-            raise ReplayMismatch("Replay previously diverged")
-        if self._position >= len(self._data["calls"]):
-            self._failed = True
-            raise ReplayMismatch("Replay received an extra call")
-        expected = self._data["calls"][self._position]
-        try:
-            normalized = canonical(self.redactor.scrub(arguments))
-        except ConfigurationError:
-            self._failed = True
-            raise ReplayMismatch("Replay arguments could not be normalized") from None
-        if expected["tool"] != name or canonical(expected["arguments"]) != normalized:
-            self._failed = True
-            # Never echo actual args or other potentially sensitive input.
-            raise ReplayMismatch(f"Tool or arguments differ at call {self._position + 1}")
-        # Stubbing an outer boundary also stubs its internal call subtree. Parent
-        # links allow unrelated concurrent roots to remain pending, even when interleaved.
-        self._consumed.update(self._groups[expected["id"]])
-        while self._position in self._consumed:
-            self._position += 1
+        with self._lock:
+            if self._failed:
+                raise ReplayMismatch("Replay previously diverged")
+            if self._position >= len(self._data["calls"]):
+                self._failed = True
+                raise ReplayMismatch("Replay received an extra call")
+            expected = self._data["calls"][self._position]
+            try:
+                normalized = canonical(self.redactor.scrub(arguments))
+            except ConfigurationError:
+                self._failed = True
+                raise ReplayMismatch("Replay arguments could not be normalized") from None
+            if expected["tool"] != name or canonical(expected["arguments"]) != normalized:
+                self._failed = True
+                # Never echo actual args or other potentially sensitive input.
+                raise ReplayMismatch(f"Tool or arguments differ at call {self._position + 1}")
+            # Stubbing an outer boundary also stubs its internal call subtree. Parent
+            # links allow unrelated concurrent roots to remain pending, even when interleaved.
+            self._consumed.update(self._groups[expected["id"]])
+            while self._position in self._consumed:
+                self._position += 1
         if expected["status"] == "error":
             error = expected["error"]
             kind = error["type"]
@@ -396,7 +400,8 @@ class Replay:
                     bound = signature.bind(*args, **kwargs)
                     bound.apply_defaults()
                 except TypeError:
-                    self._failed = True
+                    with self._lock:
+                        self._failed = True
                     raise ReplayMismatch(
                         "Replay call does not bind to the tool signature"
                     ) from None

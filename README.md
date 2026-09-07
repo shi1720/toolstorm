@@ -6,7 +6,7 @@
 
 Deterministic tool failures · side-effect contracts · strict offline replay
 
-[**Try the interactive lab →**](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md)
+[**Try the interactive lab →**](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project pitch](docs/portfolio.md)
 
 [![CI](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml/badge.svg)](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)

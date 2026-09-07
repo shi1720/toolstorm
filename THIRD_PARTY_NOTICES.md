@@ -13,4 +13,4 @@ The website was initialized with the OpenAI Sites starter and includes generated
 - [Pyodide](https://github.com/pyodide/pyodide) — MPL-2.0, with additional licenses for its included runtime and packages
 - [Geist fonts](https://github.com/vercel/geist-font) — SIL Open Font License 1.1
 
-Pyodide is loaded as an external, unmodified browser runtime. Development/CI dependencies include pytest, Hypothesis, coverage.py, Ruff, mypy, Playwright, axe-core, and the Cloudflare toolchain. Consult each package's included license for the authoritative terms. The repository's MIT license applies to original ToolStorm code.
+Pyodide is copied unmodified from its pinned npm package into deployment assets. Its MPL-2.0 source is available at the linked upstream repository. The included Python runtime retains the Python Software Foundation license. License texts are in `public/licenses/`. Development/CI dependencies include pytest, Hypothesis, coverage.py, Ruff, mypy, Playwright, axe-core, and the Cloudflare toolchain. Consult each package's included license for the authoritative terms. The repository's MIT license applies to original ToolStorm code.

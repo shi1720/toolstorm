@@ -192,10 +192,9 @@ export function Lab({
                 const item = catalog.scenarios[id],
                   Icon = ICONS[item.icon as keyof typeof ICONS];
                 return (
-                  <label
+                  <div
                     className={`scenario-option ${config.scenario === id ? 'chosen' : ''}`}
                     key={id}
-                    htmlFor={`scenario-${id}`}
                   >
                     <RadioGroupItem
                       id={`scenario-${id}`}
@@ -213,7 +212,7 @@ export function Lab({
                     {config.scenario === id && (
                       <ChevronRight className="scenario-chevron" size={16} />
                     )}
-                  </label>
+                  </div>
                 );
               })}
             </RadioGroup>
@@ -350,7 +349,8 @@ export function Lab({
                   <strong>{catalog.policies[policy].name}</strong>
                   <span>Recovery policy</span>
                   <span className="node-badge">
-                    {run.stats.calls} tool calls
+                    {run.stats.calls} tool{' '}
+                    {run.stats.calls === 1 ? 'call' : 'calls'}
                   </span>
                 </div>
                 <div className="flow-connector">
@@ -481,11 +481,14 @@ export function Lab({
                     <strong>{catalog.policies[p].name}</strong>
                     <p>{catalog.policies[p].description}</p>
                     <span className="policy-stats">
-                      <b>{r.stats.calls}</b> calls<span>·</span>
+                      <b>{r.stats.calls}</b>{' '}
+                      {r.stats.calls === 1 ? 'call' : 'calls'}
+                      <span>·</span>
                       <b className={r.stats.effects > 1 ? 'red' : ''}>
                         {r.stats.effects}
                       </b>{' '}
-                      shipments<span>·</span>
+                      {r.stats.effects === 1 ? 'shipment' : 'shipments'}
+                      <span>·</span>
                       {ms(r.stats.elapsed)}
                     </span>
                   </button>

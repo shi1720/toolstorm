@@ -13,7 +13,9 @@
     "format": "oxfmt",
     "typecheck": "tsc --noEmit",
     "test:engine": "node scripts/test-browser-engine.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "predev": "node scripts/prepare-runtime.mjs",
+    "prebuild": "node scripts/prepare-runtime.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

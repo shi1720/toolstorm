@@ -53,3 +53,8 @@ htmlcov/
 playwright-report/
 test-results/
 *.tsbuildinfo
+
+# Unmodified runtime copied from the locked npm dependency before build/dev.
+/public/runtime/
+
+/artifacts/
