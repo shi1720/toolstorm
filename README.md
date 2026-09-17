@@ -2,7 +2,7 @@
 
 **Test recovery from Python tool failures.** Inject faults at the execution boundary, check committed effects, and replay recorded calls offline.
 
-[Interactive lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) · [Quickstart](https://toolstorm-shi1720.sg127977958.chatgpt.site/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project overview](docs/portfolio.md) · [Review notes](docs/review.md)
+[Interactive lab](https://toolstorm.web.app) · [Quickstart](https://toolstorm.web.app/docs) · [Architecture](docs/architecture.md) · [API reference](docs/reference.md) · [Project overview](docs/portfolio.md) · [Review notes](docs/review.md)
 
 [![CI](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml/badge.svg)](https://github.com/shi1720/toolstorm/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-245bd6)](LICENSE)
@@ -22,7 +22,7 @@ FAIL  Unchecked retries      3 calls · 2 shipments · duplicate effect
 PASS  Validated retries      3 calls · 1 shipment  · idempotent recovery
 ```
 
-[![ToolStorm comparing recovery policies and exposing a duplicate shipment](docs/assets/lab.png)](https://toolstorm-shi1720.sg127977958.chatgpt.site)
+[![ToolStorm comparing recovery policies and exposing a duplicate shipment](docs/assets/lab.png)](https://toolstorm.web.app)
 
 **For:** agent developers writing pytest regressions, tool authors testing retry behavior, and engineers building reproducible failure environments. ToolStorm is a small testing library; your application owns retry, backoff, validation, and idempotency.
 
@@ -38,7 +38,7 @@ toolstorm demo --policy all
 toolstorm demo --policy resilient --fail-on-contract
 ```
 
-The [browser lab](https://toolstorm-shi1720.sg127977958.chatgpt.site) executes the **same Python source** in a Pyodide Web Worker. The initial page shows a labeled, previously executed example. Press **Run comparison** to execute all three policies locally. Change the seed, probability, and call budget; inspect calls and contracts; export the selected result or copy a link to its settings. The first run downloads about 13 MB of Python runtime assets; the comparison then runs entirely in your browser.
+The [browser lab](https://toolstorm.web.app) executes the **same Python source** in a Pyodide Web Worker. The initial page shows a labeled, previously executed example. Press **Run comparison** to execute all three policies locally. Change the seed, probability, and call budget; inspect calls and contracts; export the selected result or copy a link to its settings. The first run downloads about 13 MB of Python runtime assets; the comparison then runs entirely in your browser.
 
 ## The smallest useful test
 
@@ -213,3 +213,7 @@ ToolStorm builds on established ideas from fault injection and cassette testing.
 A good contribution contains a real failure mode, a broken control, a corrected control, and evidence that the contract distinguishes them. Start with [CONTRIBUTING.md](CONTRIBUTING.md). [MIT licensed](LICENSE).
 
 Built by [Shivam Gupta](https://github.com/shi1720). Developed with AI assistance and independent adversarial review; implementation claims are backed by the repository's executable tests.
+
+## Firebase Hosting
+
+The public website is deployed as a static export on Firebase Hosting. See [build, local preview and deployment](docs/firebase-hosting.md).

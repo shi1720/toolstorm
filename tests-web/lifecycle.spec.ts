@@ -331,6 +331,10 @@ test('Home resets settings after editing, executing and sharing a run', async ({
     .getByRole('button', { name: 'Copy settings link', exact: true })
     .click();
   await expect(page).toHaveURL(/scenario=blackout&seed=1729/);
+  await expect(executed(page)).toBeVisible();
+  const sharedResult = await exportedRun(page);
+  expect(sharedResult.config.seed).toBe(1729);
+  expect(sharedResult.config.scenario).toBe('blackout');
   await page.getByRole('link', { name: 'ToolStorm home', exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByLabel('Random seed', { exact: true })).toHaveValue(

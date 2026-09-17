@@ -32,9 +32,13 @@ const phases: Record<Scenario, string> = {
 export function Lab({
   initialConfig,
   initialPolicy,
+  interactive = true,
+  onBeforeShare,
 }: {
   initialConfig: Config;
   initialPolicy: Policy;
+  interactive?: boolean;
+  onBeforeShare?: (query: string) => void;
 }) {
   const [config, setConfig] = useState(initialConfig);
   const [seed, setSeed] = useState(String(initialConfig.seed));
@@ -54,11 +58,12 @@ export function Lab({
   const attempt = useRef(0);
   const active = useRef(false);
   const engine = useEngine();
-  const hydrated = useSyncExternalStore(
+  const clientReady = useSyncExternalStore(
     subscribe,
     () => true,
     () => false,
   );
+  const hydrated = interactive && clientReady;
   const disabled = running || !hydrated;
   const scenario = catalog.scenarios[config.scenario];
   const numericValid =
@@ -133,6 +138,7 @@ export function Lab({
     }).toString();
     url.hash = '';
     // Update before clipboard permissions can defer and outlive this page.
+    onBeforeShare?.(url.searchParams.toString());
     window.history.replaceState(window.history.state, '', url);
     try {
       await navigator.clipboard.writeText(url.href);

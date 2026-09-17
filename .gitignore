@@ -58,3 +58,7 @@ test-results/
 /public/runtime/
 
 /artifacts/
+
+# Firebase local cache
+/.firebase/
+firebase-debug.log*
